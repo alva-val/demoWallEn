@@ -5,36 +5,44 @@ import java.util.Map;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @SpringBootApplication
 @RestController
 public class Application {
 
-    @GetMapping("/")
-    public String home() {
-        return "OK";
-    }
-
-    @GetMapping("/triggerTLSValidate")
-    public Map<String, Object> triggerTLSValidateGet() {
-        return Map.of("status", "ok");
-    }
-
-    @PostMapping(
-        value = "/triggerTLSValidate",
-        consumes = MediaType.ALL_VALUE,
-        produces = MediaType.APPLICATION_JSON_VALUE
-    )
-    public Map<String, Object> triggerTLSValidatePost(@RequestBody(required = false) String body) {
+    @RequestMapping(value = "/", method = {
+            RequestMethod.GET, RequestMethod.POST, RequestMethod.HEAD
+    }, produces = MediaType.APPLICATION_JSON_VALUE)
+    public Map<String, Object> home(@RequestBody(required = false) String body) {
         return Map.of(
-            "status", "ok",
-            "received", body == null ? "" : body
+                "status", "ok",
+                "path", "/",
+                "body", body == null ? "" : body
         );
     }
+
+    @RequestMapping(value = {
+            "/triggerTLSValidate",
+            "/triggerTLSvalidate"
+    }, method = {
+            RequestMethod.GET, RequestMethod.POST, RequestMethod.HEAD
+    }, produces = MediaType.APPLICATION_JSON_VALUE)
+    public Map<String, Object> triggerTlsValidate(@RequestBody(required = false) String body) {
+        return Map.of(
+                "status", "ok",
+                "path", "triggerTLSValidate",
+                "body", body == null ? "" : body
+        );
+    }
+
+    public static void main(String[] args) {
+        SpringApplication.run(Application.class, args);
+    }
+}    }
 
     public static void main(String[] args) {
         SpringApplication.run(Application.class, args);
